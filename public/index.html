@@ -2,22 +2,28 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Daily Wallpaper</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Tagesgedanke</title>
   <style>
-    body { font: 16px system-ui, sans-serif; color: #ecf1f9; background: #142139; margin: 0; padding: 2rem; }
-    main { max-width: 580px; margin: 0 auto; }
-    img { max-width: 300px; width: 100%; display: block; border-radius: 20px; margin: 1.5rem 0; }
-    a { color: #bfdaff; }
+    body { background: #14233a; color: #f0f5fb; font: 18px/1.6 system-ui, sans-serif; margin: 0; min-height: 100vh; display: grid; place-items: center; }
+    main { max-width: 34rem; padding: 2rem; text-align: center; }
+    h1 { font-size: 1.1rem; color: #aebed3; font-weight: 500; }
+    #thought { font-size: 1.6rem; }
+    a { color: #b3d5ff; }
   </style>
 </head>
 <body>
 <main>
-  <h1>Daily Wallpaper</h1>
-  <p>Aktuelles Sperrbildschirm-Bild zum Abruf durch Apple Kurzbefehle.</p>
-  <img src="./lockscreen.png" alt="Aktuelles Hintergrundbild">
-  <p><a href="./lockscreen.png">lockscreen.png direkt öffnen</a></p>
-  <p>Hinweis: Bei einer erstmaligen Einrichtung wird ein Testbild dargestellt.</p>
+  <h1>Dein Tagesgedanke</h1>
+  <p id="thought">Wird geladen …</p>
+  <p><small><a href="./daily-text.txt">Textdatei ansehen</a></small></p>
 </main>
+<script>
+  fetch('./daily-text.txt?v=' + Date.now(), { cache: 'no-store' })
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+    .then(t => { document.getElementById('thought').textContent = t.trim(); })
+    .catch(() => { document.getElementById('thought').textContent = 'Text derzeit nicht verfügbar.'; });
+</script>
 </body>
 </html>

@@ -1,26 +1,27 @@
-# Daily Wallpaper / Daily Text
+# Täglicher persönlicher Gedanke – iPhone Any Text
 
-Persönlicher täglicher Text für ein Any-Text-Widget auf dem iPhone-Sperrbildschirm.
+Dieses Repository stellt **nur einen kurzen Text** für das Sperrbildschirm-Widget **Any Text** auf dem iPhone bereit. Es wird **kein Hintergrundbild** generiert oder gewechselt.
 
-## Gewünschter Ablauf
+## Ablauf
 
-1. Eine **geplante ChatGPT-Aufgabe** versucht jeden Morgen um **04:10 Europe/Berlin**, einen neuen kurzen Satz aus den jüngsten Morgen- und Abendroutinen zu formulieren. Es gibt keine vorgefertigte Spruchliste.
-2. Die Aufgabe versucht, mit der verbundenen GitHub-Integration `public/daily-text.txt` zu überschreiben und den erfolgreichen Commit zu prüfen.
-3. Der GitHub-Pages-Workflow veröffentlicht bei jedem Push die Datei öffentlich unter `https://supersuperkarl.github.io/daily-wallpaper/daily-text.txt`.
-4. Ein vorhandener iPhone-Kurzbefehl liest täglich um **05:00 Uhr** die Textdatei und aktualisiert **Any Text** auf dem Sperrbildschirm.
+1. Eine geplante ChatGPT-Aufgabe erstellt täglich einen **neuen, individuell formulierten Gedanken** auf Basis der zuletzt abgeschlossenen Morgen- und Abendroutinen.
+2. ChatGPT aktualisiert über die verbundene GitHub-Integration `public/daily-text.txt` auf `main` (eine Zeile mit abschließendem Zeilenumbruch).
+3. Ein Push auf `main` veröffentlicht die Datei automatisch über GitHub Pages.
+4. Der bestehende iPhone-Kurzbefehl ruft um **05:00 Uhr (Europe/Berlin)** die öffentliche Textdatei ab und setzt den Text im **Any Text**-Widget.
 
-**Wichtig:** Der erste unbeaufsichtigte ChatGPT-Aufgabenlauf und dessen GitHub-Schreibzugriff sind noch nicht bestätigt. Ein einzelner funktionierender Chat-Commit garantiert nicht, dass die Automationsausführung den GitHub-Connector ebenfalls aufrufen darf. Bei Fehlern bleibt der zuletzt gespeicherte Satz stehen. Die Aufgabe läuft um 04:10 Uhr, also **vor** der jeweiligen Morgenroutine; sie verwendet die jüngsten bereits abgeschlossenen Routinen.
+**Text-URL:** https://supersuperkarl.github.io/daily-wallpaper/daily-text.txt
+
+**Vorschau:** https://supersuperkarl.github.io/daily-wallpaper/
 
 ## Datenschutz
 
-Dieses Repository und seine GitHub-Pages-Seite sind öffentlich. Es dürfen nur kurze, allgemein formulierte Stärkungssätze veröffentlicht werden. Keine Namen, intime Details, konkreten Beziehungsereignisse, Gesundheits- oder anderen privaten Inhalte. Die Routinegespräche selbst bleiben außerhalb des Repositorys.
+Das Repository und GitHub Pages sind öffentlich. Keine Namen, Beziehungsdetails, intimen Inhalte oder Gesundheitsdaten in die Textdatei schreiben. Geeignet sind wenige allgemeine, persönlich passende Wörter.
 
-## GitHub Pages
+## Grenzen
 
-`https://supersuperkarl.github.io/daily-wallpaper/daily-text.txt`
+- Die ChatGPT-Aufgabe soll den Text vor 05:00 Uhr veröffentlichen. Unbeaufsichtigte GitHub-Schreibzugriffe aus geplanten Aufgaben sind nicht garantiert; die Ausführung und den Commit bei Problemen prüfen.
+- GitHub Pages kann zeitversetzt ausliefern; die iOS-Anzeige kann zwischengespeicherte Inhalte verwenden.
+- Bei einem Fehler bleibt der letzte erfolgreich veröffentlichte Text erhalten.
+- Es ist **keine** OpenAI-API-Abrechnung oder GitHub-interne Spruchliste nötig.
 
-Der Workflow `.github/workflows/publish.yml` führt **keine** tägliche Spruchauswahl mehr aus, sondern veröffentlicht nur die jeweils neu gespeicherten Dateien bei Commit oder manuellem Start. Das Bild `lockscreen.png` bleibt davon unberührt.
-
-## Weitere Dateien
-
-`scripts/generate_wallpaper.py` ist ein früherer, **nicht zeitgesteuerter** Versuch für API-Bildgenerierung. Für den Textbetrieb wird kein OpenAI-API-Schlüssel gebraucht.
+Der GitHub-Actions-Workflow veröffentlicht ausschließlich die Dateien aus `public/`. Er wählt und generiert keine Gedanken selbst.
