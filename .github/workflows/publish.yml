@@ -32,6 +32,10 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Update daily lock-screen text
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: python scripts/update_daily_text.py
+
       - name: Generate new wallpaper (scheduled or manual runs)
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         env:
@@ -39,17 +43,18 @@ jobs:
           OPENAI_IMAGE_MODEL: gpt-image-2.5-flare
         run: python scripts/generate_wallpaper.py
 
-      - name: Commit newly generated wallpaper
+      - name: Commit updated daily content
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
-          if [ -f public/lockscreen.png ] && [ -n "$(git status --porcelain -- public/lockscreen.png)" ]; then
+          if [ -n "$(git status --porcelain -- public/lockscreen.png public/daily-text.txt)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add public/lockscreen.png
-            git commit -m "Update daily wallpaper"
+            git add public/daily-text.txt
+            if [ -f public/lockscreen.png ]; then git add public/lockscreen.png; fi
+            git commit -m "Update daily wallpaper and widget text"
             git push
           else
-            echo "No new wallpaper file to commit"
+            echo "No updated daily content to commit"
           fi
 
       - name: Install demo-image dependency
