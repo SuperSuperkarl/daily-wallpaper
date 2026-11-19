@@ -1,22 +1,18 @@
-name: Publish wallpaper to GitHub Pages
+name: Publish to GitHub Pages
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
-  schedule:
-    # Daily at 02:05 UTC (03:05 winter / 04:05 summer in Germany).
-    # Allow time before the 05:00 iPhone shortcut; scheduled runs can be delayed.
-    - cron: '5 2 * * *'
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
 concurrency:
   group: github-pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -24,43 +20,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
-      - name: Update daily lock-screen text
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: python scripts/update_daily_text.py
-
-      - name: Generate new wallpaper (scheduled or manual runs)
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_IMAGE_MODEL: gpt-image-2.5-flare
-        run: python scripts/generate_wallpaper.py
-
-      - name: Commit updated daily content
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: |
-          if [ -n "$(git status --porcelain -- public/lockscreen.png public/daily-text.txt)" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add public/daily-text.txt
-            if [ -f public/lockscreen.png ]; then git add public/lockscreen.png; fi
-            git commit -m "Update daily wallpaper and widget text"
-            git push
-          else
-            echo "No updated daily content to commit"
-          fi
-
       - name: Install demo-image dependency
         if: hashFiles('public/lockscreen.png') == ''
         run: python -m pip install 'Pillow>=11,<13'
-
       - name: Prepare Pages content
         run: |
           mkdir -p public site
@@ -68,7 +34,6 @@ jobs:
             python scripts/create_demo_wallpaper.py public/lockscreen.png
           fi
           cp -R public/. site/
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
