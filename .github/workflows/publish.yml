@@ -5,9 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
   schedule:
-    # Daily at 04:05 UTC (05:05 winter / 06:05 summer in Germany).
-    # Intended to finish before the 06:30 iPhone shortcut.
-    - cron: '5 4 * * *'
+    # Daily at 02:05 UTC (03:05 winter / 04:05 summer in Germany).
+    # Allow time before the 05:00 iPhone shortcut; scheduled runs can be delayed.
+    - cron: '5 2 * * *'
 
 permissions:
   contents: write
