@@ -1,3 +1,4 @@
+
 name: Publish daily text to GitHub Pages
 
 on:
@@ -10,26 +11,65 @@ on:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
 concurrency:
   group: github-pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  publish:
+  upload:
+    name: Upload Pages artifact
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Upload daily text site
         uses: actions/upload-pages-artifact@v3
         with:
           path: public
+          name: github-pages
+
+  deploy:
+    name: Deploy GitHub Pages
+    needs: upload
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Wait for artifact availability
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        shell: bash
+        run: |
+          for attempt in {1..12}; do
+            echo "Checking artifact (attempt $attempt/12)"
+
+            if gh api \
+              "repos/$GH_REPO/actions/runs/$RUN_ID/artifacts" \
+              --jq '.artifacts[] | select(.name == "github-pages" and .expired == false) | .id' \
+              | grep -qE '^[0-9]+$'; then
+              echo "Pages artifact is available."
+              exit 0
+            fi
+
+            sleep 5
+          done
+
+          echo "::error::Pages artifact not available after 60 seconds."
+          exit 1
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages
